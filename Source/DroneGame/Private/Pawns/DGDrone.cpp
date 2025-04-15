@@ -1,6 +1,7 @@
 #include "Pawns/DGDrone.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/DGCombatComponent.h"
 #include "DataAssets/DGDataAsset_Input.h"
 #include "DroneGameTypes/CollisionChannels.h"
 #include "Engine/LocalPlayer.h"
@@ -15,6 +16,7 @@ ADGDrone::ADGDrone()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
+	Mesh->SetCollisionResponseToChannel(CollisionChannels::Projectile, ECR_Ignore);
 
 	BodyHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BodyHitBox"));
 	BodyHitBox->SetupAttachment(Mesh);
@@ -22,6 +24,10 @@ ADGDrone::ADGDrone()
 
 	HeadHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HeadHitBox"));
 	HeadHitBox->SetupAttachment(Mesh);
+	HeadHitBox->SetCollisionResponseToChannel(CollisionChannels::Projectile, ECollisionResponse::ECR_Block);
+
+	Muzzle = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle"));
+	Muzzle->SetupAttachment(Mesh);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(Mesh);
@@ -39,13 +45,15 @@ void ADGDrone::BeginPlay()
 	Super::BeginPlay();
 
 	APlayerController* PC = GetController<APlayerController>();
-	if (IsValid(PC) && IsValid(InputDataAsset))
+	if (!IsValid(PC) || !IsValid(InputDataAsset))
 	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
-		if (IsValid(Subsystem))
-		{
-			Subsystem->AddMappingContext(InputDataAsset->MappingContext, 0);
-		}
+		return;
+	}
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+	if (IsValid(Subsystem))
+	{
+		Subsystem->AddMappingContext(InputDataAsset->MappingContext, 0);
 	}
 }
 
@@ -83,5 +91,26 @@ void ADGDrone::Input_Look(const FInputActionValue& Value)
 
 void ADGDrone::Input_Shoot()
 {
+	if (CanShoot())
+	{
+		CombatComponent->Shoot(Muzzle->GetComponentLocation(), GetControlRotation().Vector());
+	}
+}
 
+bool ADGDrone::CanShoot() const
+{
+	if (!IsValid(Controller))
+	{
+		return false;
+	}
+
+	const FRotator ControlRotation = GetControlRotation();
+	const FVector LookVector = ControlRotation.Vector();
+	const FVector DroneUpVector = GetActorUpVector();
+
+	float Dot = FVector::DotProduct(LookVector, -DroneUpVector);
+	float AngleDegrees = FMath::Acos(Dot) * (180.f / PI);
+
+	// We can only shoot at the area below the drone
+	return AngleDegrees < 90.f;
 }

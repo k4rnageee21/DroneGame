@@ -34,6 +34,8 @@ protected:
 	/*	End Input callbacks		*/
 
 private:
+	bool CanShoot() const;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
@@ -42,6 +44,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 	TObjectPtr<UBoxComponent> HeadHitBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	TObjectPtr<USceneComponent> Muzzle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
