@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Pawns/DGPawnBase.h"
+#include "Interfaces/DGCombatInterface.h"
 #include "DGDrone.generated.h"
 
 class UCameraComponent;
@@ -11,7 +12,7 @@ class UDGDataAsset_Input;
 struct FInputActionValue;
 
 UCLASS(Abstract)
-class DRONEGAME_API ADGDrone : public ADGPawnBase
+class DRONEGAME_API ADGDrone : public ADGPawnBase, public IDGCombatInterface
 {
 	GENERATED_BODY()
 
@@ -23,6 +24,7 @@ public:
 	/*	End Pawn interface		*/
 
 	FORCEINLINE UDGDroneCombatComponent* GetDroneCombatComponent() const { return CombatComponent; }
+	virtual UDGCombatComponent* GetCombatComponent() const override;
 
 protected:
 	/*	Start Actor interface	*/
@@ -34,6 +36,11 @@ protected:
 	void Input_Look(const FInputActionValue& Value);
 	void Input_Shoot();
 	/*	End Input callbacks		*/
+
+	void SetupDefaultMappingContext();
+
+	UFUNCTION()
+	void OnMeshOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Camera")

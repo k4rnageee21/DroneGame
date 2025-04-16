@@ -24,6 +24,7 @@ void UDGStatsWidget::SetHealth(float Health)
 {
 	if (IsValid(HealthLabel))
 	{
+		Health = FMath::FloorToFloat(Health);
 		FFormatNamedArguments Args;
 		Args.Add("Health", Health);
 

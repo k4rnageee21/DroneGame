@@ -10,6 +10,7 @@
 #include "PlayerControllers/DGPlayerController.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "Interfaces/DGPickupItemInterface.h"
 
 ADGDrone::ADGDrone()
 {
@@ -29,6 +30,12 @@ void ADGDrone::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetupDefaultMappingContext();
+	Mesh->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnMeshOverlap);
+}
+
+void ADGDrone::SetupDefaultMappingContext()
+{
 	APlayerController* PC = GetController<APlayerController>();
 	if (!IsValid(PC) || !IsValid(InputDataAsset))
 	{
@@ -53,6 +60,11 @@ void ADGDrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(InputDataAsset->LookAction, ETriggerEvent::Triggered, this, &ThisClass::Input_Look);
 		EnhancedInputComponent->BindAction(InputDataAsset->ShootAction, ETriggerEvent::Triggered, this, &ThisClass::Input_Shoot);
 	}
+}
+
+UDGCombatComponent* ADGDrone::GetCombatComponent() const
+{
+	return CombatComponent.Get();
 }
 
 void ADGDrone::Input_Move(const FInputActionValue& Value)
@@ -80,5 +92,14 @@ void ADGDrone::Input_Shoot()
 	{
 		const FVector HitLocation = CombatComponent->GetHitLocationFromController();
 		CombatComponent->Shoot(Muzzle->GetComponentLocation(), HitLocation);
+	}
+}
+
+void ADGDrone::OnMeshOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	IDGPickupItemInterface* PickUpInterface = Cast<IDGPickupItemInterface>(OtherActor);
+	if (PickUpInterface)
+	{
+		PickUpInterface->PickUp(this);
 	}
 }
