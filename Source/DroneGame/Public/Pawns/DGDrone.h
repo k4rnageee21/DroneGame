@@ -4,7 +4,6 @@
 #include "Pawns/DGPawnBase.h"
 #include "DGDrone.generated.h"
 
-class UBoxComponent;
 class UCameraComponent;
 class UFloatingPawnMovement;
 class UDGDroneCombatComponent;
@@ -37,18 +36,6 @@ protected:
 	/*	End Input callbacks		*/
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
-	TObjectPtr<UStaticMeshComponent> Mesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
-	TObjectPtr<UBoxComponent> BodyHitBox;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
-	TObjectPtr<UBoxComponent> HeadHitBox;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
-	TObjectPtr<USceneComponent> Muzzle;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Camera")
 	TObjectPtr<UCameraComponent> Camera;
 

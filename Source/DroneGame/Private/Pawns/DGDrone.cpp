@@ -1,9 +1,7 @@
 #include "Pawns/DGDrone.h"
 #include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
 #include "Components/DGDroneCombatComponent.h"
 #include "DataAssets/DGDataAsset_Input.h"
-#include "DroneGameTypes/CollisionChannels.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -15,27 +13,11 @@
 
 ADGDrone::ADGDrone()
 {
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
-	Mesh->SetCollisionResponseToChannel(CollisionChannels::Projectile, ECR_Ignore);
-
-	BodyHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BodyHitBox"));
-	BodyHitBox->SetupAttachment(Mesh);
-	BodyHitBox->SetCollisionResponseToChannel(CollisionChannels::Projectile, ECollisionResponse::ECR_Block);
-
-	HeadHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HeadHitBox"));
-	HeadHitBox->SetupAttachment(Mesh);
-	HeadHitBox->SetCollisionResponseToChannel(CollisionChannels::Projectile, ECollisionResponse::ECR_Block);
-
-	Muzzle = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle"));
-	Muzzle->SetupAttachment(Mesh);
-
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(Mesh);
+	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
-
 	CombatComponent = CreateDefaultSubobject<UDGDroneCombatComponent>(TEXT("CombatComponent"));
 
 	bUseControllerRotationPitch = false;

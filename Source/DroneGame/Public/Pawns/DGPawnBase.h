@@ -24,6 +24,18 @@ protected:
 	virtual void BeginPlay() override;
 	/*	End Actor interface		*/
 
+	UFUNCTION()
+	virtual void OnDeath();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	TObjectPtr<UBoxComponent> MainHitBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	TObjectPtr<USceneComponent> Muzzle;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UDGHealthComponent> HealthComponent;
 };
