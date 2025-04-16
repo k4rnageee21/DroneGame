@@ -7,6 +7,7 @@
 class UBoxComponent;
 class UCameraComponent;
 class UFloatingPawnMovement;
+class UDGDroneCombatComponent;
 class UDGDataAsset_Input;
 struct FInputActionValue;
 
@@ -34,8 +35,6 @@ protected:
 	/*	End Input callbacks		*/
 
 private:
-	bool CanShoot() const;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
@@ -53,6 +52,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Movement")
 	TObjectPtr<UFloatingPawnMovement> Movement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	TObjectPtr<UDGDroneCombatComponent> CombatComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Input")
 	TObjectPtr<UDGDataAsset_Input> InputDataAsset;

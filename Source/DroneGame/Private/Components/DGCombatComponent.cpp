@@ -8,26 +8,40 @@ UDGCombatComponent::UDGCombatComponent()
 	
 }
 
-void UDGCombatComponent::Shoot(const FVector& Start, const FVector& LookAtVector)
+void UDGCombatComponent::Shoot(const FVector& Start, const FVector& Target)
 {
-	if (!ProjectileClass)
+	if (!ProjectileClass || !CanShoot(Target))
 	{
 		return;
 	}
 
 	UWorld* World = GetWorld();
 	check(IsValid(World));
-	const FRotator StartRotation = LookAtVector.Rotation();
+	const FRotator StartRotation = (Target - Start).Rotation();
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = GetOwner<APawn>();
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
 
-	World->SpawnActor(ProjectileClass, &Start, &StartRotation, SpawnParams);
+	AActor* SpawnedActor = World->SpawnActor(ProjectileClass, &Start, &StartRotation, SpawnParams);
+	if (SpawnedActor)
+	{
+		CurrentAmmo--;
+	}
 }
 
 void UDGCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	Init();
+}
+
+void UDGCombatComponent::Init()
+{
+	StartAmmo = FMath::Min(StartAmmo, MaxAmmo);
+	CurrentAmmo = StartAmmo;
+}
+
+bool UDGCombatComponent::CanShoot(const FVector& Target) const
+{
+	return CurrentAmmo > 0;
 }

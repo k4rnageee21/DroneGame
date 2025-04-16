@@ -14,11 +14,12 @@ ADGProjectileBase::ADGProjectileBase()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Collision);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
-	Movement->InitialSpeed = 3000.f;
-	Movement->MaxSpeed = 3000.f;
-	Movement->bRotationFollowsVelocity = true;
+	Movement->InitialSpeed = 6000.f;
+	Movement->MaxSpeed = 6000.f;
+	Movement->bRotationFollowsVelocity = false;
 	Movement->bShouldBounce = false;
 	Movement->ProjectileGravityScale = 0.f;
 }

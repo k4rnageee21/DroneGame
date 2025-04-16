@@ -1,7 +1,7 @@
 #include "Pawns/DGDrone.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
-#include "Components/DGCombatComponent.h"
+#include "Components/DGDroneCombatComponent.h"
 #include "DataAssets/DGDataAsset_Input.h"
 #include "DroneGameTypes/CollisionChannels.h"
 #include "Engine/LocalPlayer.h"
@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "PlayerControllers/DGPlayerController.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
 
@@ -34,6 +35,8 @@ ADGDrone::ADGDrone()
 	Camera->bUsePawnControlRotation = true;
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
+
+	CombatComponent = CreateDefaultSubobject<UDGDroneCombatComponent>(TEXT("CombatComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -91,26 +94,9 @@ void ADGDrone::Input_Look(const FInputActionValue& Value)
 
 void ADGDrone::Input_Shoot()
 {
-	if (CanShoot())
+	if (IsValid(CombatComponent))
 	{
-		CombatComponent->Shoot(Muzzle->GetComponentLocation(), GetControlRotation().Vector());
+		const FVector HitLocation = CombatComponent->GetHitLocationFromController();
+		CombatComponent->Shoot(Muzzle->GetComponentLocation(), HitLocation);
 	}
-}
-
-bool ADGDrone::CanShoot() const
-{
-	if (!IsValid(Controller))
-	{
-		return false;
-	}
-
-	const FRotator ControlRotation = GetControlRotation();
-	const FVector LookVector = ControlRotation.Vector();
-	const FVector DroneUpVector = GetActorUpVector();
-
-	float Dot = FVector::DotProduct(LookVector, -DroneUpVector);
-	float AngleDegrees = FMath::Acos(Dot) * (180.f / PI);
-
-	// We can only shoot at the area below the drone
-	return AngleDegrees < 90.f;
 }
