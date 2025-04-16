@@ -14,6 +14,9 @@ class DRONEGAME_API UDGStatsWidget : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetAmmo(int32 Ammo);
+
+	UFUNCTION(BlueprintCallable)
+	void SetHealth(float Health);
 	
 protected:
 	UPROPERTY(meta = (BindWidget))

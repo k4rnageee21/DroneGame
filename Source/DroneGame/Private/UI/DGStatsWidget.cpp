@@ -20,4 +20,20 @@ void UDGStatsWidget::SetAmmo(int32 Ammo)
 	}
 }
 
+void UDGStatsWidget::SetHealth(float Health)
+{
+	if (IsValid(HealthLabel))
+	{
+		FFormatNamedArguments Args;
+		Args.Add("Health", Health);
+
+		FText FormattedText = FText::Format(
+			NSLOCTEXT("DroneGame", "HealthLabel", "Health: {Health}"),
+			Args
+		);
+
+		HealthLabel->SetText(FormattedText);
+	}
+}
+
 #undef LOCTEXT_NAMESPACE

@@ -8,6 +8,19 @@ UDGCombatComponent::UDGCombatComponent()
 	
 }
 
+void UDGCombatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Init();
+}
+
+void UDGCombatComponent::Init()
+{
+	StartAmmo = FMath::Min(StartAmmo, MaxAmmo);
+	CurrentAmmo = StartAmmo;
+}
+
 void UDGCombatComponent::Shoot(const FVector& Start, const FVector& Target)
 {
 	if (!ProjectileClass || !CanShoot(Target))
@@ -24,24 +37,23 @@ void UDGCombatComponent::Shoot(const FVector& Start, const FVector& Target)
 	AActor* SpawnedActor = World->SpawnActor(ProjectileClass, &Start, &StartRotation, SpawnParams);
 	if (SpawnedActor)
 	{
-		CurrentAmmo--;
+		SetAmmo(CurrentAmmo - 1);
 	}
-}
-
-void UDGCombatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	Init();
-}
-
-void UDGCombatComponent::Init()
-{
-	StartAmmo = FMath::Min(StartAmmo, MaxAmmo);
-	CurrentAmmo = StartAmmo;
 }
 
 bool UDGCombatComponent::CanShoot(const FVector& Target) const
 {
 	return CurrentAmmo > 0;
+}
+
+void UDGCombatComponent::AddAmmo(int32 AddedAmmo)
+{
+	AddedAmmo = FMath::Max(0, AddedAmmo);
+	SetAmmo(CurrentAmmo + AddedAmmo);
+}
+
+void UDGCombatComponent::SetAmmo(int32 NewAmmo)
+{
+	CurrentAmmo = FMath::Max(0, NewAmmo);
+	OnAmmoChanged.Broadcast(CurrentAmmo);
 }

@@ -23,6 +23,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	/*	End Pawn interface		*/
 
+	FORCEINLINE UDGDroneCombatComponent* GetDroneCombatComponent() const { return CombatComponent; }
+
 protected:
 	/*	Start Actor interface	*/
 	virtual void BeginPlay() override;
