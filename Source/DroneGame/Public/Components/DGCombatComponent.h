@@ -16,7 +16,7 @@ class DRONEGAME_API UDGCombatComponent : public UDGPawnExtensionComponentBase
 public:	
 	UDGCombatComponent();
 
-	virtual void Shoot(const FVector& Start, const FVector& Target);
+	virtual void Shoot(const FVector& Target);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAmmoChangedSignature OnAmmoChanged;
@@ -29,6 +29,7 @@ protected:
 
 	virtual void Init();
 	virtual bool CanShoot(const FVector& Target) const;
+	virtual FVector GetShootStartLocationFromOwner() const;
 	// Don't want to make this function public
 	void SetAmmo(int32 NewAmmo);
 

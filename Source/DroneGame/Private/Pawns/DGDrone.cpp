@@ -91,7 +91,7 @@ void ADGDrone::Input_Shoot()
 	if (IsValid(CombatComponent))
 	{
 		const FVector HitLocation = CombatComponent->GetHitLocationFromController();
-		CombatComponent->Shoot(Muzzle->GetComponentLocation(), HitLocation);
+		CombatComponent->Shoot(HitLocation);
 	}
 }
 

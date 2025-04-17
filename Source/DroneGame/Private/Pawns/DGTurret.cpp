@@ -5,3 +5,8 @@ ADGTurret::ADGTurret()
 {
 	CombatComponent = CreateDefaultSubobject<UDGTurretCombatComponent>(TEXT("CombatComponent"));
 }
+
+UDGCombatComponent* ADGTurret::GetCombatComponent() const
+{
+	return CombatComponent;
+}

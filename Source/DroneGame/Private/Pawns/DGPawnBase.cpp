@@ -23,6 +23,11 @@ ADGPawnBase::ADGPawnBase()
 	HealthComponent = CreateDefaultSubobject<UDGHealthComponent>(TEXT("HealthComponent"));
 }
 
+FVector ADGPawnBase::GetMuzzleLocation() const
+{
+	return IsValid(Muzzle) ? Muzzle->GetComponentLocation() : FVector{};
+}
+
 void ADGPawnBase::BeginPlay()
 {
 	Super::BeginPlay();

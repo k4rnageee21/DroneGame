@@ -1,4 +1,5 @@
 #include "Components/DGCombatComponent.h"
+#include "Pawns/DGPawnBase.h"
 #include "Projectiles/DGProjectileBase.h"
 
 UDGCombatComponent::UDGCombatComponent()
@@ -21,7 +22,7 @@ void UDGCombatComponent::Init()
 	CurrentAmmo = StartAmmo;
 }
 
-void UDGCombatComponent::Shoot(const FVector& Start, const FVector& Target)
+void UDGCombatComponent::Shoot(const FVector& Target)
 {
 	if (!ProjectileClass || !CanShoot(Target))
 	{
@@ -30,6 +31,7 @@ void UDGCombatComponent::Shoot(const FVector& Start, const FVector& Target)
 
 	UWorld* World = GetWorld();
 	check(IsValid(World));
+	const FVector Start = GetShootStartLocationFromOwner();
 	const FRotator StartRotation = (Target - Start).Rotation();
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = GetOwner<APawn>();
@@ -44,6 +46,12 @@ void UDGCombatComponent::Shoot(const FVector& Start, const FVector& Target)
 bool UDGCombatComponent::CanShoot(const FVector& Target) const
 {
 	return CurrentAmmo > 0;
+}
+
+FVector UDGCombatComponent::GetShootStartLocationFromOwner() const
+{
+	ADGPawnBase* Pawn = GetOwningPawn<ADGPawnBase>();
+	return IsValid(Pawn) ? Pawn->GetMuzzleLocation() : FVector{};
 }
 
 void UDGCombatComponent::AddAmmo(int32 AddedAmmo)

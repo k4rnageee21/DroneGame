@@ -18,6 +18,7 @@ public:
 	ADGPawnBase();
 
 	virtual UDGHealthComponent* GetHealthComponent() const override { return HealthComponent; }
+	FVector GetMuzzleLocation() const;
 
 protected:
 	/*	Start Actor interface	*/

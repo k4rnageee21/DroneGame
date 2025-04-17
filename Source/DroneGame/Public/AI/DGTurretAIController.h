@@ -17,11 +17,13 @@ public:
 	ADGTurretAIController();
 	
 protected:
-	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
 	UFUNCTION()
 	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+	UFUNCTION()
+	void HandleTargetDestroyed(AActor* DestroyedActor);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
