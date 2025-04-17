@@ -2,18 +2,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/DGPoolable.h"
 #include "DGProjectileBase.generated.h"
 
 class UBoxComponent;
 class UProjectileMovementComponent;
+class UDGObjectPoolSubsystem;
 
 UCLASS(Abstract)
-class DRONEGAME_API ADGProjectileBase : public AActor
+class DRONEGAME_API ADGProjectileBase : public AActor, public IDGPoolable
 {
 	GENERATED_BODY()
 	
 public:	
 	ADGProjectileBase();
+
+	virtual void OnGetFromPool() override;
+	virtual void OnReturnToPool() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -39,4 +44,10 @@ protected:
 	float LifetimeDuration = 5.f;
 
 	FTimerHandle LifetimeTH; // TODO: Remove this if I wouldn't be able to make object pool in time
+
+	UPROPERTY()
+	TObjectPtr<UDGObjectPoolSubsystem> ObjectPoolSubsystem;
+
+private:
+	void RestoreMovement();
 };

@@ -20,9 +20,6 @@ public:
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UDGTextWithBackgroundWidget> TurretsLabel;
-
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UDGTextWithBackgroundWidget> HealthLabel;
 
 	UPROPERTY(meta = (BindWidget))

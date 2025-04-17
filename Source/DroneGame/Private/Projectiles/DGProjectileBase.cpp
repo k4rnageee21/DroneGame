@@ -4,6 +4,7 @@
 #include "DroneGameTypes/CollisionChannels.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interfaces/DGDamageable.h"
+#include "WorldSubsystems/DGObjectPoolSubsystem.h"
 
 ADGProjectileBase::ADGProjectileBase()
 {
@@ -31,31 +32,56 @@ void ADGProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ObjectPoolSubsystem = UWorld::GetSubsystem<UDGObjectPoolSubsystem>(GetWorld());
+}
+
+void ADGProjectileBase::OnGetFromPool()
+{
+	SetActorHiddenInGame(false);
+	Collision->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
 	Collision->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
+	RestoreMovement();
 	GetWorldTimerManager().SetTimer(LifetimeTH, this, &ThisClass::OnLifetimeEnd, LifetimeDuration, false);
+}
+
+void ADGProjectileBase::OnReturnToPool()
+{
+	SetActorHiddenInGame(true);
+	Collision->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	Collision->OnComponentHit.RemoveDynamic(this, &ThisClass::OnHit);
+	GetWorldTimerManager().ClearTimer(LifetimeTH);
 }
 
 void ADGProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	IDGDamageable* Damageable = Cast<IDGDamageable>(OtherActor);
-	if (!Damageable)
+	if (Damageable)
 	{
-		LifetimeTH.Invalidate(); // TODO: Remove this if I wouldn't be able to make object pool in time
-		Destroy();
-		return;
+		UDGHealthComponent* HealthComponent = Damageable->GetHealthComponent();
+		if (IsValid(HealthComponent))
+		{
+			HealthComponent->TakeDamage(BaseDamage);
+		}
 	}
 
-	UDGHealthComponent* HealthComponent = Damageable->GetHealthComponent();
-	if (IsValid(HealthComponent))
-	{
-		HealthComponent->TakeDamage(BaseDamage);
-		LifetimeTH.Invalidate(); // TODO: Remove this if I wouldn't be able to make object pool in time
-		Destroy();
-	}
+	OnLifetimeEnd();
 }
 
 void ADGProjectileBase::OnLifetimeEnd()
 {
-	LifetimeTH.Invalidate(); // TODO: Remove this if I wouldn't be able to make object pool in time
-	Destroy();
+	if (IsValid(ObjectPoolSubsystem))
+	{
+		ObjectPoolSubsystem->ReturnToPool(this);
+	}
+	else
+	{
+		Destroy();
+	}
+}
+
+void ADGProjectileBase::RestoreMovement()
+{
+	Movement->Activate(true);
+	Movement->SetUpdatedComponent(Collision);
+	Movement->Velocity = GetActorRotation().Vector() * Movement->InitialSpeed;
 }

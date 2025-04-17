@@ -7,6 +7,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAmmoChangedSignature, int32, NewAmmo);
 
 class ADGProjectileBase;
+class UDGObjectPoolSubsystem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DRONEGAME_API UDGCombatComponent : public UDGPawnExtensionComponentBase
@@ -44,4 +45,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	TSubclassOf<ADGProjectileBase> ProjectileClass;
+
+	UPROPERTY()
+	TObjectPtr<UDGObjectPoolSubsystem> ObjectPoolSubsystem;
 };

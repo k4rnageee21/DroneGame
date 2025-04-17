@@ -1,6 +1,7 @@
 #include "Components/DGCombatComponent.h"
 #include "Pawns/DGPawnBase.h"
 #include "Projectiles/DGProjectileBase.h"
+#include "WorldSubsystems/DGObjectPoolSubsystem.h"
 
 UDGCombatComponent::UDGCombatComponent()
 {
@@ -20,6 +21,8 @@ void UDGCombatComponent::Init()
 {
 	StartAmmo = FMath::Min(StartAmmo, MaxAmmo);
 	CurrentAmmo = StartAmmo;
+
+	ObjectPoolSubsystem = UWorld::GetSubsystem<UDGObjectPoolSubsystem>(GetWorld());
 }
 
 void UDGCombatComponent::Shoot(const FVector& Target)
@@ -33,13 +36,13 @@ void UDGCombatComponent::Shoot(const FVector& Target)
 	check(IsValid(World));
 	const FVector Start = GetShootStartLocationFromOwner();
 	const FRotator StartRotation = (Target - Start).Rotation();
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Instigator = GetOwner<APawn>();
-
-	AActor* SpawnedActor = World->SpawnActor(ProjectileClass, &Start, &StartRotation, SpawnParams);
-	if (SpawnedActor)
+	if (IsValid(ObjectPoolSubsystem))
 	{
-		SetAmmo(CurrentAmmo - 1);
+		AActor* SpawnedActor = ObjectPoolSubsystem->GetFromPool(ProjectileClass, Start, StartRotation);
+		if (SpawnedActor)
+		{
+			SetAmmo(CurrentAmmo - 1);
+		}
 	}
 }
 
